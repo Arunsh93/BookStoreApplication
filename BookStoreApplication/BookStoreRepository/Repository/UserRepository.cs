@@ -2,11 +2,14 @@
 using BookStoreRepository.Interface;
 using Experimental.System.Messaging;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Mail;
+using System.Security.Claims;
 using System.Text;
 
 namespace BookStoreRepository.Repository
@@ -205,6 +208,24 @@ namespace BookStoreRepository.Repository
             {
                 sqlConnection.Close();
             }
+        }
+
+        public string GenerateToken(string EmailId)
+        {
+            byte[] key = Convert.FromBase64String(this.configuration["SecretKey"]);
+            SymmetricSecurityKey securityKey = new SymmetricSecurityKey(key);
+            SecurityTokenDescriptor descriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.Name, EmailId)
+            }),
+                Expires = DateTime.UtcNow.AddMinutes(30),
+                SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature)
+            };
+            JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+            JwtSecurityToken token = handler.CreateJwtSecurityToken(descriptor);
+            return handler.WriteToken(token);
         }
     }
 }

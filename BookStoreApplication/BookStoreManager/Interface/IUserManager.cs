@@ -14,5 +14,7 @@ namespace BookStoreManager.Interface
         string ForgotPassword(string EmailId);
 
         bool ResetPassword(ResetPasswordModel resetPassword);
+
+        string GenerateToken(string EmailId);
     }
 }

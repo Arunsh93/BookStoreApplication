@@ -63,5 +63,17 @@ namespace BookStoreManager.Manager
                 throw new Exception(ex.Message);
             }
         }
+
+        public string GenerateToken(string EmailId)
+        {
+            try
+            {
+                return this.userRepository.GenerateToken(EmailId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }
